@@ -33,22 +33,23 @@ def open_database(db_name):
 
 #takes in the flight_dict from get_API_info for a given airport, and throws the top 25 results into a separate dictionary
 #stores IATA code, name, city, the average number of flights to that airport, and carriers
-def aero_data_into_database(data_dict, IATA):
+def aero_data_into_dict(data_dict):
     temp = {}
     for i in range(0, 24):
+        blah = {}
         IATA = data_dict["routes"][i]["destination"]["iata"]
-        temp["IATA"] = IATA
         name = data_dict["routes"][i]["destination"]["name"]
-        temp["name"] = name
+        blah["name"] = name
         city = data_dict["routes"][i]["destination"]["municipalityName"]
-        temp["city"] = city
+        blah["city"] = city
         num_flights = data_dict["routes"][i]["averageDailyFlights"]
-        temp["num_flights"] = num_flights
+        blah["num_flights"] = num_flights
         temp_operators = data_dict["routes"][i]["operators"]
         carriers = []
         for i in temp_operators:
             carriers.append(i["name"])
-        temp["carriers"] = carriers
+        blah["carriers"] = carriers
+        temp[IATA] = blah
     return temp
     
 def main():
@@ -58,13 +59,9 @@ def main():
     IATA_list = ["DTW", "PHX", "LAX", "ATL", "JFK", "SEA", "ORD", "PHL", "CLE", "RNO"]
     data_dict = {}
     for port in IATA_list:
-        if port in data_dict:
-            continue
-        else:
-            aero_stat_url = aero_base_1 + port + aero_base_2
-            print(aero_stat_url)
-            flight_dict = get_API_info(aero_stat_url, aerobox_params)
-            data_dict[port] = aero_data_into_database(flight_dict, port)
-    print(data_dict)
+        aero_stat_url = aero_base_1 + port + aero_base_2
+        flight_dict = get_API_info(aero_stat_url, aerobox_params)
+        data_dict[port] = aero_data_into_dict(flight_dict)
     
+
 main()
