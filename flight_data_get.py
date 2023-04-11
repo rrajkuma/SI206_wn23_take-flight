@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 import requests
 import sqlite3
 import json
@@ -52,6 +51,8 @@ def aero_data_into_dict(data_dict):
         temp[IATA] = blah
     return temp
     
+
+
 def main():
     #to trim down data collection, I've created a list of IATA codes to take a look at
     #this way I can place all my data collection in a loop
