@@ -101,7 +101,6 @@ def aero_dict_into_database(data_dict, port, cur, conn):
             cur.execute("INSERT OR IGNORE INTO airports (iata, name) VALUES (?,?)", (dest, data[item]["name"]))
         conn.commit()
         #checks the carrier list to see if any new carriers should be added. if so, adds them.
-        print("Adding planes to database")
         helper_planes_into_database(data[item]["carriers"], cur, conn)
         #actually adds the information into the main table
         source_query = "SELECT air_id FROM airports WHERE iata = " + '"' + port + '"'
