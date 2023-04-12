@@ -135,7 +135,7 @@ def main():
         aero_stat_url = aero_base_1 + port + aero_base_2
         flight_dict = {}
         if(os.path.isfile(path + "/" + filename)):
-            print("Reading existing file")
+            print("Reading existing file " + filename)
             with open(filename) as json_file:
                 flight_dict = json.load(json_file)
         else:
