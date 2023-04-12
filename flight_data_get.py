@@ -5,9 +5,9 @@ import os
 
 #variables to store the keys for the APIs
 aerobox_params = {
-	"X-RapidAPI-Key": "6d6bcf99aamsh46a794dad762262p1c7fb9jsn368b4c5aec31",
-	"X-RapidAPI-Host": "aerodatabox.p.rapidapi.com"
-}
+    'X-RapidAPI-Key': 'e172162659msh3c9b2ce1528b672p116317jsna0362bb1f951',
+    'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
+  }
 
 aviation_params = {'access_key': '4916bf37e9a67451871a02a2b8e26113'}
 
@@ -62,11 +62,8 @@ def aero_data_into_dict(data_dict, start, end):
     return temp
     
 def helper_planes_into_database(plane_list, cur, conn):
-    print(plane_list)
     for plane in plane_list:
-        print(plane)
         query = "SELECT plane_id FROM carrier WHERE name = " + '"' + plane + '"'
-        print(query)
         cur.execute(query)
         res = cur.fetchone()
         if res == None:
@@ -84,7 +81,7 @@ def aero_dict_into_database(data_dict, port, cur, conn):
     if res != 0:
         num_res = res
         #to prevent out of range errors
-        if num_res + 5 > len(data_dict):
+        if num_res + 5 > len(data_dict["routes"]):
             print("Loading the last results for " + port)
             data = aero_data_into_dict(data_dict, num_res-1, len(data_dict))
         else:
@@ -98,10 +95,10 @@ def aero_dict_into_database(data_dict, port, cur, conn):
         #checks whether the destination was in the airport table. if it isn't, it adds it
         dest = item
         query = "SELECT air_id FROM airports WHERE iata = " + '"' + dest + '"'
-        res = cur.execute(query)
-        if res == None:
+        cur.execute(query)
+        if cur.fetchone() == None:
             print("Inserting new airport into database: " + dest)
-            cur.execute("INSERT OR IGNORE INTO airports (iata, name) VALUES (?,?)", (dest, item["name"]))
+            cur.execute("INSERT OR IGNORE INTO airports (iata, name) VALUES (?,?)", (dest, data[item]["name"]))
         conn.commit()
         #checks the carrier list to see if any new carriers should be added. if so, adds them.
         print("Adding planes to database")
@@ -129,8 +126,8 @@ def main():
     #to trim down data collection, I've created a list of IATA codes to take a look at
     #this way I can place all my data collection in a loop
     #if there's something else of interest, add to the list!
-    IATA_list = ["DTW", "PHX"]
-    #IATA_list = ["DTW", "PHX", "ATL", "SEA", "ORD"]
+    #IATA_list = ["DTW", "PHX"]
+    IATA_list = ["DTW", "PHX", "ATL", "SEA", "ORD"]
     db_name = "flights.db"
     cur, conn = open_database(db_name)
     path = os.path.dirname(os.path.abspath(__file__))
@@ -142,7 +139,6 @@ def main():
             print("Reading existing file")
             with open(filename) as json_file:
                 flight_dict = json.load(json_file)
-                aero_dict_into_database(flight_dict, port, cur, conn)
         else:
             print("Grabbing historical flight data for " + port)
             flight_dict = get_API_info(aero_stat_url, aerobox_params)
