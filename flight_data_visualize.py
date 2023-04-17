@@ -93,11 +93,36 @@ FROM routes
 GROUP BY routes.dest_id
 ORDER BY ROUND(AVG(routes.num_flights)) DESC
 '''
-
+def parse_route_data(cur):
+    routes_list = []
+    num_flight_list = []
+    cur.execute("SELECT routes.source_id, routes.dest_id, ROUND(AVG(routes.num_flights)) FROM routes GROUP BY routes.dest_id ORDER BY ROUND(AVG(routes.num_flights)) DESC")
+    res = cur.fetchall()
+    #process query with separate queries for the source and dest ids
+    #this can be done with subqueries too, but every implementation I tried had a bug in it
+    for row in res:
+        s_query = "SELECT iata FROM airports WHERE air_id = " + '"' + str(row[0]) + '"'
+        cur.execute(s_query)
+        s_iata = cur.fetchone()[0]
+        d_query = "SELECT iata FROM airports WHERE air_id = " + '"' + str(row[1]) + '"'
+        cur.execute(d_query)
+        d_iata = cur.fetchone()[0]
+        routes_list.append(s_iata + " -> " + d_iata)
+        num_flight_list.append(int(row[2]))
+    #makes bar chart
+    #this looks cramped as hell- I'll revise this when I have time too
+    plt.figure(figsize=(8,10))
+    plt.margins(y=0)
+    plt.barh(routes_list, num_flight_list, height=1)
+    plt.yticks(fontsize=8)
+    plt.xlabel("Number of Flights")
+    plt.title("Most Popular Routes")
+    plt.savefig('route_chart.png')
 
 def main():
     database = "flights.db"
     cur = load_flights(database)
-    parse_carrier_data(cur)
+    #parse_carrier_data(cur)
+    parse_route_data(cur)
 
 main()
