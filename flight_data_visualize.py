@@ -119,11 +119,19 @@ def parse_route_data(cur):
     plt.xlabel("Number of Flights")
     plt.title("Most Popular Routes")
     plt.savefig('route_chart.png')
+    #throws data into text file
+    #TEXT FILES USE COMMAS AS DELIMITERS
+    with open('routes_outfile.txt', 'w') as outfile:
+        for item in routes_list:
+            outfile.write(f"{item},")
+        outfile.write(f"\n")
+        for item in num_flight_list:
+            outfile.write(f"{str(item)},")
 
 def main():
     database = "flights.db"
     cur = load_flights(database)
-    #parse_carrier_data(cur)
+    parse_carrier_data(cur)
     parse_route_data(cur)
 
 main()
