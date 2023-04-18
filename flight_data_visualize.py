@@ -111,9 +111,10 @@ def parse_route_data(cur):
         num_flight_list.append(int(row[2]))
     #makes bar chart
     #this looks cramped as hell- I'll revise this when I have time too
-    plt.figure(figsize=(8,10))
+    colors = [{flight<=3: 'yellowgreen', 3<flight<=5: 'limegreen', 5<flight<=10: 'forestgreen', 10<flight<=15: 'mediumseagreen', flight>15: 'seagreen'}[True] for flight in num_flight_list]
+    plt.figure(figsize=(8,12))
     plt.margins(y=0)
-    plt.barh(routes_list, num_flight_list, height=1)
+    plt.barh(routes_list, num_flight_list, height=1, color=colors)
     plt.yticks(fontsize=8)
     plt.xlabel("Number of Flights")
     plt.title("Most Popular Routes")
