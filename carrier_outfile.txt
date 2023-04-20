@@ -1,2 +1,2 @@
-American Airlines,Southwest Airlines,Delta Air Lines,United,Frontier,Alaska,Spirit Airlines,
-559,500,459,261,202,137,102,
+American Airlines,Southwest Airlines,Delta Air Lines,Spirit Airlines,United,Frontier,Alaska,
+559,500,459,295,241,202,137,
