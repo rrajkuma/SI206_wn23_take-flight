@@ -43,7 +43,7 @@ def open_database(db_name):
 
 def flight_into_dict(data_dict, start, end):
     
-    flight_dict = {}
+    flight_lst = []
 
     for flight in data_dict[start:end]:
         flight_id = flight['flight_id']
@@ -51,15 +51,15 @@ def flight_into_dict(data_dict, start, end):
         clicks = flight['clicks']
         from_city = flight['from_city']
         to_city = flight['to_city']
-        flight_dict[flight_id] = {'flight': flight_name, 'clicks': clicks, 'from_city': from_city, 'to_city': to_city}
-    
-    return flight_dict
+        flight_lst = {'flight_id':flight_id,'flight': flight_name, 'clicks': clicks, 'from_city': from_city, 'to_city': to_city}
+       
+    return flight_lst
 
 
-def flight_dict_into_database(data_dict, cur, conn):
+def flight_dict_into_database(data_lst, cur, conn):
 
-    for flight in data_dict:
-
+    for flight in data_lst:
+        
         # Check if the flight_id already exists in the database
         cur.execute("SELECT COUNT(*) FROM tracked_flights WHERE flight_id = ?", (flight['flight_id'],))
         
@@ -68,16 +68,17 @@ def flight_dict_into_database(data_dict, cur, conn):
         if count != 0:
             num_res = count
             #to prevent out of range errors
-            if num_res + 5 > len(data_dict):
-                data = flight_into_dict(data_dict, num_res-1, len(data_dict))
+            if num_res + 5 > len(data_lst):
+                data = flight_into_dict(data_lst, num_res-1, len(data_lst))
             else:
-                data = flight_into_dict(data_dict, num_res-1, num_res+5)
+                data = flight_into_dict(data_lst, num_res-1, num_res+5)
         
         else:
-            data = flight_into_dict(data_dict, 0, 5)
+            data = flight_into_dict(data_lst, 0, 5)
             
         if count == 0:
             # If flight_id doesn't exist, insert the flight_info into the database
+                
             flight_id = data.get('flight_id')
             flight = data.get('flight')
             clicks = data.get('clicks')
@@ -97,6 +98,7 @@ def flight_dict_into_database(data_dict, cur, conn):
 def main():
 
     api_data = get_API_info(url, header)
+    
 
         # Store API data in a JSON file
     with open('tracked_flights.json', 'w') as json_file:
