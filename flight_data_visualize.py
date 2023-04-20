@@ -23,53 +23,74 @@ ORDER BY SUM(routes.num_flights) DESC
 def parse_carrier_data(cur):
     carrier_list = []
     num_flight_list = []
+    temp_tup_list = []
     #query listed above includes the calculation since SUM is an aggregate function in SQL
     res = cur.execute("SELECT carrier.name, SUM(routes.num_flights) FROM routes JOIN carrier ON carrier.plane_id = routes.carrier_id GROUP BY routes.carrier_id HAVING SUM(routes.num_flights) > 100 ORDER BY SUM(routes.num_flights) DESC")
-    #forms the bar list and the labels 
+    #forms the list as (carrier, num_flights)
     for row in res:
-        carrier_list.append(row[0])
-        num_flight_list.append(int(row[1]))
+        temp_tup_list.append((row[0], int(row[1])))
     #cleans up lists because the API counts "American" and "American Airlines" as two different airlines
     #ditto with "Southwest" and "Southwest Airlines"
     #and "Spirit" and "Spirit Airlines"
     #this is an API issue, not mine
     #finds indicies
+    am_index, ama_index, south_index, swa_index, sp_index, spa_index = 0, 0, 0, 0, 0, 0
+    for i in range(len(temp_tup_list)):
+        if temp_tup_list[i][0] == "American":
+            am_index = i
+        if temp_tup_list[i][0] == "American Airlines":
+            ama_index = i
+        if temp_tup_list[i][0] == "Southwest":
+            south_index = i
+        if temp_tup_list[i][0] == "Southwest Airlines":
+            swa_index = i
+        if temp_tup_list[i][0] == "Spirit":
+            sp_index = i
+        if temp_tup_list[i][0] == "Spirit Airlines":
+            spa_index = i
+    '''
     am_index = carrier_list.index("American")
     ama_index = carrier_list.index("American Airlines")
     south_index = carrier_list.index("Southwest")
     swa_index = carrier_list.index("Southwest Airlines")
     sp_index = carrier_list.index("Spirit")
     spa_index = carrier_list.index("Spirit Airlines")
-    #updates sums, and assigns them to American Airlines and Southwest Airlines
-    am_sum = num_flight_list[am_index] + num_flight_list[ama_index]
-    s_sum = num_flight_list[south_index] + num_flight_list[swa_index]
-    sp_sum = num_flight_list[sp_index] = num_flight_list[spa_index]
-    num_flight_list[ama_index] = am_sum
-    num_flight_list[swa_index] = s_sum
-    num_flight_list[spa_index] = sp_sum
-    #delete the rows for American and Southwest
-    num_flight_list.remove(num_flight_list[am_index])
-    num_flight_list.remove(num_flight_list[south_index])
-    num_flight_list.remove(num_flight_list[sp_index])
-    carrier_list.remove("American")
-    carrier_list.remove("Southwest")
-    carrier_list.remove("Spirit")
+    '''
+    #updates sums
+    t1 = temp_tup_list[am_index][1]
+    t2 = temp_tup_list[ama_index][1]
+    t3 = temp_tup_list[south_index][1]
+    t4 = temp_tup_list[swa_index][1]
+    t5 = temp_tup_list[sp_index][1]
+    t6 = temp_tup_list[spa_index][1]
+    am_sum = t1 + t2
+    s_sum = t3 + t4
+    sp_sum = t5 + t6
+    #delete the extraneous rows
+    temp_tup_list.remove(("American", t1))
+    temp_tup_list.remove(("American Airlines", t2))
+    temp_tup_list.remove(("Southwest", t3))
+    temp_tup_list.remove(("Southwest Airlines", t4))
+    temp_tup_list.remove(("Spirit", t5))
+    temp_tup_list.remove(("Spirit Airlines", t6))
+    #adds new tuples to the lists
+    temp_tup_list.append(("American Airlines", am_sum))
+    temp_tup_list.append(("Southwest Airlines", s_sum))
+    temp_tup_list.append(("Spirit Airlines", sp_sum))
     #re-sorts lists
-    num_flights = sorted(num_flight_list, reverse=True)
-    #this is hard-coded- I might come back and change this later
-    carrier_list[0] = "American Airlines"
-    carrier_list[1] = "Southwest Airlines"
-    carrier_list[2] = "Delta Air Lines"
-    carrier_list[3] = "United"
+    temp = sorted(temp_tup_list, key=lambda x: x[1], reverse=True)
+    for item in temp:
+        carrier_list.append(item[0])
+        num_flight_list.append(item[1])
     #creates list of colors for bar chart- will also probably modify this...later
     col = []
-    for item in num_flights:
+    for item in num_flight_list:
         if item > 300:
             col.append('mediumspringgreen')
         else:
             col.append('mediumaquamarine')
     #makes bar chart
-    plt.bar(carrier_list, num_flights, color=col)
+    plt.bar(carrier_list, num_flight_list, color=col)
     plt.xlabel("Carriers")
     plt.xticks(rotation=30, ha='right', fontsize=6.5)
     plt.ylabel("Number of Flights")
@@ -81,7 +102,7 @@ def parse_carrier_data(cur):
         for item in carrier_list:
             outfile.write(f"{item},")
         outfile.write(f"\n")
-        for item in num_flights:
+        for item in num_flight_list:
             outfile.write(f"{str(item)},")
     
 
