@@ -9,8 +9,6 @@ aerobox_params = {
     'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
   }
 
-aviation_params = {'access_key': '4916bf37e9a67451871a02a2b8e26113'}
-
 #variables to store the urls for the APIs
 #this url will answer 'How many daily flights to different destinations from an airport?'
 #and "What are the most popular routes from an airport?"
