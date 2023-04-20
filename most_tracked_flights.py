@@ -51,7 +51,7 @@ def flight_into_dict(data_dict, start, end):
         clicks = flight['clicks']
         from_city = flight['from_city']
         to_city = flight['to_city']
-        flight_lst = {'flight_id':flight_id,'flight': flight_name, 'clicks': clicks, 'from_city': from_city, 'to_city': to_city}
+        flight_lst.append({'flight_id':flight_id,'flight': flight_name, 'clicks': clicks, 'from_city': from_city, 'to_city': to_city})
        
     return flight_lst
 
@@ -74,22 +74,22 @@ def flight_dict_into_database(data_lst, cur, conn):
                 data = flight_into_dict(data_lst, num_res-1, num_res+5)
         
         else:
-            data = flight_into_dict(data_lst, 0, 5)
-            
+            data = flight_into_dict(data_lst, 0, 20)
+
         if count == 0:
             # If flight_id doesn't exist, insert the flight_info into the database
-                
-            flight_id = data.get('flight_id')
-            flight = data.get('flight')
-            clicks = data.get('clicks')
-            from_city = data.get('from_city')
-            to_city = data.get('to_city')
-            cur.execute('''INSERT INTO tracked_flights (flight_id, flight, clicks, from_city, to_city)
-                    VALUES (?, ?, ?, ?, ?)''',
-                    (flight_id, flight, clicks, from_city, to_city))
+            for info in data:  
+                flight_id = info.get('flight_id')
+                flight = info.get('flight')
+                clicks = info.get('clicks')
+                from_city = info.get('from_city')
+                to_city = info.get('to_city')
+                cur.execute('''INSERT INTO tracked_flights (flight_id, flight, clicks, from_city, to_city)
+                        VALUES (?, ?, ?, ?, ?)''',
+                        (flight_id, flight, clicks, from_city, to_city))
 
         else:
-            print("Flight with flight_id {} already exists in the database".format(flight_id))
+            print("Flight already exists in the database")
 
     # Commit changes to the database
     conn.commit()
@@ -98,7 +98,7 @@ def flight_dict_into_database(data_lst, cur, conn):
 def main():
 
     api_data = get_API_info(url, header)
-    
+
 
         # Store API data in a JSON file
     with open('tracked_flights.json', 'w') as json_file:
