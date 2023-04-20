@@ -1,0 +1,2 @@
+Exeter,Concepcion,Paris,Sandnessjoen,Frankfurt,Leknes,Liverpool,Hannover,New York,Sao Paulo,Newcastle,Santiago,Antalya,Bronnoysund,Panama City,Dublin,Brisbane,Naples,Cardiff,Seoul,Sivas,Miami,Fortaleza,London,Istanbul,Iquique,Rzeszow,Espargos,Ankara,Trabzon,
+140,180,188,204,216,216,236,240,240,240,276,392,464,468,496,500,508,680,716,1128,1444,1580,1584,1756,2000,2520,2796,3476,6352,13108,

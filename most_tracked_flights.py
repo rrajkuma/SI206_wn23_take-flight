@@ -1,8 +1,6 @@
 import requests
 import sqlite3
 import json
-import csv
-import os
 
 url = "https://flight-radar1.p.rapidapi.com/flights/list-most-tracked"
 
