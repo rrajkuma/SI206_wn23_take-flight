@@ -27,7 +27,7 @@ def open_database(db_name):
     cur = conn.cursor()
 
     # Create the 'tracked flights' table if it doesn't exist
-    cur.execute('''CREATE TABLE IF NOT EXISTS most_tracked_flights
+    cur.execute('''CREATE TABLE IF NOT EXISTS tracked_flights
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
                  flight_id TEXT,
                  flight TEXT,
@@ -61,7 +61,7 @@ def flight_dict_into_database(data_dict, cur, conn):
     for flight in data_dict:
 
         # Check if the flight_id already exists in the database
-        cur.execute("SELECT COUNT(*) FROM most_tracked_flights WHERE flight_id = ?", (flight['flight_id'],))
+        cur.execute("SELECT COUNT(*) FROM tracked_flights WHERE flight_id = ?", (flight['flight_id'],))
         
         count = int(cur.fetchone()[0])
        
@@ -83,7 +83,7 @@ def flight_dict_into_database(data_dict, cur, conn):
             clicks = data.get('clicks')
             from_city = data.get('from_city')
             to_city = data.get('to_city')
-            cur.execute('''INSERT INTO most_tracked_flights (flight_id, flight, clicks, from_city, to_city)
+            cur.execute('''INSERT INTO tracked_flights (flight_id, flight, clicks, from_city, to_city)
                     VALUES (?, ?, ?, ?, ?)''',
                     (flight_id, flight, clicks, from_city, to_city))
 
