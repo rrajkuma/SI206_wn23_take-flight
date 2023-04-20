@@ -34,7 +34,7 @@ def open_database(db_name):
                  clicks INTEGER,
                  from_city TEXT,
                  to_city TEXT)''')
-    
+    conn.commit()
     return cur, conn
 
 
@@ -103,7 +103,7 @@ def main():
         json.dump(api_data, json_file)
 
     # Open SQLite database
-    cur, conn = open_database('tracked_flights.db')
+    cur, conn = open_database('flights.db')
 
     # Load data from JSON file into a dictionary
     with open('tracked_flights.json', 'r') as json_file:
